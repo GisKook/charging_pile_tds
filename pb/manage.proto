@@ -1,0 +1,49 @@
+syntax="proto3";
+package Report;
+
+import "param.proto";
+
+message Command {
+	enum CommandType {
+		CMT_INVALID              = 0x0000;  
+
+		// das<->tms
+		CMT_REQ_LOGIN            = 0x0001; // das向tms请求登录
+		CMT_REP_LOGIN            = 0x8001; // tms向das反馈登录结果
+
+		// das<->tms
+		CMT_REQ_SETTING          = 0x0010; 
+		CMT_REP_SETTING          = 0x8010; 
+
+		// das->tss
+		CMT_REQ_HEART            = 0x0006;
+
+		// das<->tms 
+		CMT_REQ_PRICE            = 0x0004;
+		CMT_REP_PRICE            = 0x8004;
+
+		// das<->tms
+		CMT_REQ_MODE 		 = 0x0003;
+		CMT_REP_MODE 		 = 0x8003;
+
+		// das<->tms 
+		CMT_REQ_MAX_CURRENT      = 0x0007;
+		CMT_REP_MAX_CURRENT      = 0x8007;
+
+		CMT_REQ_CHARGING_PREPARE = 0x8009; // 平台请求充电
+		CMT_REP_CHARGING_PREPARE = 0x0009; // 平台请求充电结果
+		CMT_REQ_CHARGING         = 0x800a; // 平台请求开始充电
+		CMT_REP_CHARGING         = 0x000a; // 平台请求开始充电结果
+		CMT_REQ_STOP_CHARGING = 0x800e; // 平台请求结束充电
+		CMT_REP_STOP_CHARGING = 0x000e; // 平台请求结束充电反馈
+
+		// web<->das
+		CMT_REQ_NOTIFY_SET_PRICE = 0x800f;
+		CMT_REP_NOTIFY_SET_PRICE = 0x000f;
+	}
+	CommandType type = 1; // 命令类型
+	string  uuid = 2; // 发起消息的服务器id
+	uint64  tid = 3; // 充电桩号
+	uint32  serial_number = 4; // 序列号
+	repeated Param paras = 5;  // 参数
+}
