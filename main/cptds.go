@@ -24,13 +24,13 @@ func main() {
 	// create a db socket
 	db_socket, e := db.NewDbSocket(configuration.DB)
 	checkError(e)
+	db_socket.DoWork()
 
 	// catchs system signal
 	chSig := make(chan os.Signal)
 	signal.Notify(chSig, syscall.SIGINT, syscall.SIGTERM)
 	fmt.Println("Signal: ", <-chSig)
 	db_socket.Close()
-	mq_socket.Stop()
 }
 
 func checkError(err error) {

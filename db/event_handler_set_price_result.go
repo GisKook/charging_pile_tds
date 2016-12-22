@@ -4,10 +4,16 @@ import (
 	"log"
 )
 
-const sql_update_command_result = "UPDATE t_command_send_log SET response_result=$1 ,response_time=now()  where cpid=$2 and serila_number=$3"
+const sql_update_command_result = "UPDATE t_command_send_log SET response_result=$1 ,response_time=now()  where cpid=$2 and serial_number=$3"
 
 func (db_socket *DbSocket) ProccessSetPriceResult() {
 	log.Println("proccess set price result")
+	db_socket.mutex_setprice.Lock()
+	if len(db_socket.SetPriceResult) == 0 {
+		db_socket.mutex_setprice.Unlock()
+		return
+	}
+	db_socket.mutex_setprice.Unlock()
 
 	tx, err := db_socket.Db.Begin()
 	if err != nil {
@@ -22,6 +28,8 @@ func (db_socket *DbSocket) ProccessSetPriceResult() {
 	}
 
 	defer stmt.Close()
+
+	db_socket.mutex_setprice.Lock()
 	for _, set_price_result := range db_socket.SetPriceResult {
 		cpid := set_price_result.Tid
 		serial := set_price_result.SerialNumber
@@ -41,4 +49,5 @@ func (db_socket *DbSocket) ProccessSetPriceResult() {
 		}
 		db_socket.SetPriceResult = db_socket.SetPriceResult[:0]
 	}
+	db_socket.mutex_setprice.Unlock()
 }

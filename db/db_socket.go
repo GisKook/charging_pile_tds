@@ -7,12 +7,15 @@ import (
 	"github.com/giskook/charging_pile_tds/pb"
 	_ "github.com/lib/pq"
 	"log"
+	"sync"
 	"time"
 )
 
 type DbSocket struct {
 	Db             *sql.DB
 	SetPriceResult []*Report.Command
+	mutex_setprice sync.Mutex
+	BeginTraned    bool
 	ticker         *time.Ticker
 }
 
@@ -34,6 +37,7 @@ func NewDbSocket(db_config *conf.DBConfigure) (*DbSocket, error) {
 			Db:             db,
 			SetPriceResult: make([]*Report.Command, 0),
 			ticker:         time.NewTicker(time.Duration(db_config.TranInterval) * time.Second),
+			BeginTraned:    false,
 		}
 
 	}
@@ -51,7 +55,9 @@ func (db_socket *DbSocket) Close() {
 }
 
 func (db_socket *DbSocket) RecvSetPriceResult(command *Report.Command) {
+	db_socket.mutex_setprice.Lock()
 	db_socket.SetPriceResult = append(db_socket.SetPriceResult, command)
+	db_socket.mutex_setprice.Unlock()
 }
 
 func (db_socket *DbSocket) DoWork() {
@@ -63,6 +69,7 @@ func (db_socket *DbSocket) DoWork() {
 		select {
 		case <-db_socket.ticker.C:
 			go db_socket.ProccessSetPriceResult()
+
 		}
 	}
 }
