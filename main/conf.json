@@ -1,21 +1,21 @@
 {
-    "Uuid": "tds",
+    "Uuid": "tds_test",
     "Nsq": {
         "Consumer": {
             "Addr": "192.168.2.67:4150",
-            "Topic": "tds",
+            "Topic": "tds_test",
             "Channels": [
-                "tds_ch",
-                "tds_ch",
-                "tds_ch",
-                "tds_ch"
+                "tds_test_ch",
+                "tds_test_ch",
+                "tds_test_ch",
+                "tds_test_ch"
             ]
         }
     },
 
     "DB": {
-        "Host": "222.222.218.51",
-	"Port": "2732",
+        "Host": "192.168.2.121",
+	"Port": "5432",
 	"User": "postgres",
 	"Passwd":"postgres",
 	"DbName":"cetcnav",
