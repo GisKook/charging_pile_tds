@@ -14,10 +14,6 @@ func RecvNsq(socket *NsqSocket, message []byte) {
 		log.Println("unmarshal error")
 	} else {
 		log.Printf("<IN NSQ> %s %d \n", command.Uuid, command.Tid)
-		switch command.Type {
-		case Report.Command_CMT_REP_NOTIFY_SET_PRICE:
-			db.GetDBScoket().RecvSetPriceResult(command)
-			break
-		}
+		db.GetDBScoket().RecvCommandResult(command)
 	}
 }

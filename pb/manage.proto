@@ -43,6 +43,7 @@ message Command {
 		
 		// das->wechat
 		CMT_REP_CHARGING_DATA_UPLOAD = 0x0009; // 上报电表数据
+		CMT_REP_CHARGING_COST        = 0x8009; // 下发金额
 		
 		// das->wechat
 		CMT_REP_CHARGING_STOPPED = 0x000b; // 充电桩已经结束了充电
@@ -53,6 +54,9 @@ message Command {
 
 		// das -> ?
 		CMT_REP_OFFLINE_DATA = 0x000d; // 上传离线数据
+		
+		// tss->wechat
+		CMT_NOTIFY_TRANSCATION = 0x0100; // tss 通知 wechat 开始退款
 	}
 	CommandType type = 1; // 命令类型
 	string  uuid = 2; // 发起消息的服务器id

@@ -12,11 +12,11 @@ import (
 )
 
 type DbSocket struct {
-	Db             *sql.DB
-	SetPriceResult []*Report.Command
-	mutex_setprice sync.Mutex
-	BeginTraned    bool
-	ticker         *time.Ticker
+	Db                   *sql.DB
+	CommandResult        []*Report.Command
+	mutex_command_result sync.Mutex
+	BeginTraned          bool
+	ticker               *time.Ticker
 }
 
 var G_DbSocket *DbSocket = nil
@@ -34,10 +34,10 @@ func NewDbSocket(db_config *conf.DBConfigure) (*DbSocket, error) {
 		log.Println("db open success")
 
 		G_DbSocket = &DbSocket{
-			Db:             db,
-			SetPriceResult: make([]*Report.Command, 0),
-			ticker:         time.NewTicker(time.Duration(db_config.TranInterval) * time.Second),
-			BeginTraned:    false,
+			Db:            db,
+			CommandResult: make([]*Report.Command, 0),
+			ticker:        time.NewTicker(time.Duration(db_config.TranInterval) * time.Second),
+			BeginTraned:   false,
 		}
 
 	}
@@ -54,10 +54,10 @@ func (db_socket *DbSocket) Close() {
 	db_socket.Db.Close()
 }
 
-func (db_socket *DbSocket) RecvSetPriceResult(command *Report.Command) {
-	db_socket.mutex_setprice.Lock()
-	db_socket.SetPriceResult = append(db_socket.SetPriceResult, command)
-	db_socket.mutex_setprice.Unlock()
+func (db_socket *DbSocket) RecvCommandResult(command *Report.Command) {
+	db_socket.mutex_command_result.Lock()
+	db_socket.CommandResult = append(db_socket.CommandResult, command)
+	db_socket.mutex_command_result.Unlock()
 }
 
 func (db_socket *DbSocket) DoWork() {
@@ -68,7 +68,7 @@ func (db_socket *DbSocket) DoWork() {
 	for {
 		select {
 		case <-db_socket.ticker.C:
-			go db_socket.ProccessSetPriceResult()
+			go db_socket.ProccessCommandResult()
 
 		}
 	}
